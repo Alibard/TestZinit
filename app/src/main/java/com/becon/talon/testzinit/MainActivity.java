@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         t = new Thread(new Runnable() {
             public void run() {
                 try {
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.SECONDS.sleep(120);
                     runOnUiThread(runn1);
 
                 } catch (InterruptedException e) {
