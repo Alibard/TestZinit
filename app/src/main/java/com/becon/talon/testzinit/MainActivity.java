@@ -8,12 +8,17 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.becon.talon.testzinit.adapters.RecycleVewAdapter;
 import com.becon.talon.testzinit.rest.DataModel;
 import com.becon.talon.testzinit.rest.RestClientV2;
 import com.becon.talon.testzinit.utils.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Thread t;
     private boolean allDone = false;
     private Intent intent;
+    private int randomNum;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,12 +92,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void doalog() {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+
+
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        Random rand = null;
-                        int randomNum = rand.nextInt((dataModels.size() - 0) + 1) + 0;
+
                        intent.putExtra(Constants.TITLE, dataModels.get(randomNum).getTitle());
                        intent.putExtra(Constants.URL, dataModels.get(randomNum).getThumbnail());
                         startActivity(intent);
@@ -103,12 +111,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-        SimpleDateFormat sdf = new SimpleDateFormat("HHmm");
+        Random rand = new Random();
+        randomNum = rand.nextInt((dataModels.size() - 0) + 1) + 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         String currentDateandTime = sdf.format(new Date());
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(currentDateandTime).setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.image, null);
+;       ImageView imageView = (ImageView)dialogLayout.findViewById(R.id.image);
+        TextView text   = (TextView)dialogLayout.findViewById(R.id.text);
+        text.setText(dataModels.get(randomNum).getTitle());
+        Picasso.with(this)
+                .load(dataModels.get(randomNum).getThumbnail())
+                .into(imageView);
+//
+        builder.setView(dialogLayout);
+        builder.setTitle(currentDateandTime);
+        builder.setPositiveButton("Детальніше", dialogClickListener)
+                .setNegativeButton("Відміна", dialogClickListener).show();
     }
 
 
@@ -135,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         t = new Thread(new Runnable() {
             public void run() {
                 try {
-                    TimeUnit.SECONDS.sleep(120);
+                    TimeUnit.SECONDS.sleep(10);
                     runOnUiThread(runn1);
 
                 } catch (InterruptedException e) {
